@@ -128,8 +128,14 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
     self.file_original_path = urllib.unquote ( movieFullPath )             # Movie Path
 
+    if self.parsearch:
+      self.title = os.path.basename(os.path.dirname( self.file_original_path )) # Title is foldername
+
     if (__addon__.getSetting( "fil_name" ) == "true"):                     # Display Movie name or search string
-      self.file_name = os.path.basename( movieFullPath )
+      if self.parsearch:                                                   # Display the folder name
+        self.file_name = self.title 
+      else:
+        self.file_name = os.path.basename( movieFullPath )
     else:
       if (len(str(self.year)) < 1 ) :
         self.file_name = self.title.encode('utf-8')
@@ -467,19 +473,20 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
   def keyboard(self, parent):
     dir, self.year = xbmc.getCleanMovieTitle(self.file_original_path, self.parsearch)
-    if not parent:
-      if self.man_search_str != "":
-        srchstr = self.man_search_str
-      else:
-        srchstr = "%s (%s)" % (dir,self.year,)  
-      kb = xbmc.Keyboard(srchstr, _( 751 ), False)
-      text = self.file_name
-      kb.doModal()
-      if (kb.isConfirmed()): text, self.year = xbmc.getCleanMovieTitle(kb.getText())
-      self.title = text
-      self.man_search_str = text
+    if parent: # If "Use folder name for lookup"
+      dir = os.path.basename(os.path.dirname(self.file_original_path))
+    self.title = dir
+    if self.year != "" and not parent:
+      srchstr = "%s (%s)" % (dir,self.year,)
     else:
-      self.title = dir   
+      srchstr = dir
+    # Allways show keyboard
+    if self.man_search_str != "":
+      srchstr = self.man_search_str 
+    kb = xbmc.Keyboard(srchstr, _( 751 ), False)
+    kb.doModal()
+    if (kb.isConfirmed()): 
+      self.title = self.man_search_str = kb.getText()
 
     log( __name__ ,"Manual/Keyboard Entry: Title:[%s], Year: [%s]" % (self.title, self.year,))
     if self.year != "" :
