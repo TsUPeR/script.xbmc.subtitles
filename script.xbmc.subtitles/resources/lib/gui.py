@@ -481,21 +481,20 @@ class GUI( xbmcgui.WindowXMLDialog ):
     else:
       srchstr = dir
     # Allways show keyboard
-    if self.man_search_str != "":
+    if self.man_search_str != "": #We have a old search
       srchstr = self.man_search_str 
     kb = xbmc.Keyboard(srchstr, _( 751 ), False)
     kb.doModal()
     if (kb.isConfirmed()): 
       self.title = self.man_search_str = kb.getText()
-
-    log( __name__ ,"Manual/Keyboard Entry: Title:[%s], Year: [%s]" % (self.title, self.year,))
-    if self.year != "" :
-      self.file_name = "%s (%s)" % (self.file_name, str(self.year),)
-    else:
-      self.file_name = self.title   
-    self.tvshow = ""
-    self.next = list(self.service_list)
-    self.Search_Subtitles() 
+      log( __name__ ,"Manual/Keyboard Entry: Title:[%s], Year: [%s]" % (self.title, self.year,))
+      if self.year != "" :
+        self.file_name = "%s (%s)" % (self.file_name, str(self.year),)
+      else:
+        self.file_name = self.title   
+      self.tvshow = ""
+      self.next = list(self.service_list)
+      self.Search_Subtitles() 
 
   def onClick( self, controlId ):
     if controlId == SUBTITLES_LIST:
